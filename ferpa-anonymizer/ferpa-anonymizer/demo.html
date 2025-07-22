@@ -1,12 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Demo - FERPA Anonymizer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FERPA Anonymizer Demo</title>
+  <style>
+    body { font-family: Arial; padding: 2rem; background: #f2f2f2; }
+    textarea { width: 100%; height: 200px; margin-bottom: 1rem; }
+    button { padding: 10px 20px; font-size: 1rem; }
+    pre { background: #fff; padding: 1rem; border: 1px solid #ccc; overflow-x: auto; }
+  </style>
 </head>
-<body style="background:#1e1e1e; color:white; font-family:Arial,sans-serif; padding:20px;">
-  <h1>FERPA Anonymizer Demo</h1>
-  <p>This demo is coming soon. Please check back later.</p>
-  <a href="index.html" style="color:#4ecdc4;">⬅ Back to Project</a>
+<body>
+  <h1>FERPA Document Anonymizer (Demo)</h1>
+  <p>Paste any text with names, student IDs, emails, etc. and click <b>Anonymize</b>.</p>
+  <textarea id="inputText" placeholder="Paste sensitive document text here..."></textarea>
+  <br />
+  <button onclick="anonymize()">Anonymize</button>
+  <h3>🔐 Anonymized Output:</h3>
+  <pre id="outputText"></pre>
+  <h3>📊 Stats:</h3>
+  <pre id="stats"></pre>
+
+  <script>
+    async function anonymize() {
+      const text = document.getElementById("inputText").value;
+      const res = await fetch("/anonymize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      });
+
+      if (!res.ok) {
+        document.getElementById("outputText").textContent = "❌ Error: " + res.statusText;
+        return;
+      }
+
+      const data = await res.json();
+      document.getElementById("outputText").textContent = data.anonymized;
+      document.getElementById("stats").textContent = JSON.stringify(data.stats, null, 2);
+    }
+  </script>
 </body>
 </html>
